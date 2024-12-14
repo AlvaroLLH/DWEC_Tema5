@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		<title>Gestor simple de tareas</title>
+		<style type="text/css">
+			.tarea {
+				margin: 0.5em 0;
+				padding: 1em;
+				border: 1px solid black;
+			}
+				.tarea.caducada {
+					background-color: #CC3333;
+				}
+				.tarea.finalizada {
+					background-color: #33CC33;
+				}
+			span {
+				padding: 0 1em;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<h1>Gestor Simple de tareas</h1>
+		
+		<form id="formNuevaTarea">
+			<p><label>Tarea:</label> <input id="textoTarea" type="text"> <input id="fechaTarea" type="date"><button id="crearTarea">Nueva Tarea</button></p>
+		</form>
+		
+		<div id="listaTareas"></div>
+		
+
+		<div id="infoGeneralTareas">
+			<span>Número total de tareas: </span><span id="numTotalTareas"></span>
+			<span>Número de tareas completada: </span><span id="tareasFinalizadas"></span>
+		</div>
+
+		
+		<script type="text/javascript">
+		
+		// URL de referencia: https://www.taniarascia.com/javascript-mvc-todo-app/
+		
+			"use strict";
+		
+			class Tarea {
+				_id = null; // Identificador único de la tarea nunca habrá dos iguales
+				_texto = "";
+				_fecha = "";
+				_finalizada = false;
+				_caducada = false;
+				
+				constructor( elId, elTexto, laFecha ) {
+					this._id = elId;
+					this._texto = elTexto;
+					this._fecha = laFecha;
+					this._caducada = this.estaCaducada(laFecha);
+				}
+				
+				static validar( elTexto, laFecha) {
+					let esValida = false;
+					if(elTexto != ""  && laFecha != "") {
+						esValida = true;
+					}
+					return esValida;
+				}
+				
+				cambiarEstado() {
+					this._finalizada = !this.finalizada;
+				}
+				
+				estaCaducada(laFecha) {
+					let hoy = new Date();
+					let fecha = new Date(laFecha);
+					return (fecha < hoy);
+				}
+				
+				get id() {
+					return this._id;
+				}
+				// No hay set id, solo se asigna cuando se crea la tarea
+				
+				get texto() {
+					return this._texto;
+				}
+				set texto(elTexto) {
+					if(elTexto != "" ) {
+						this._texto = elTexto;
+					} else {
+						console.log("ERROR: La tarea no puede ser vacía.");
+					}
+				}
+				get fecha() {
+					return this._fecha;
+				}
+				set fecha(laFecha) {
+					if( laFecha != "" ) {
+						this._fecha = laFecha;
+					}
+				}
+				get finalizada() {
+					return this._finalizada;
+				}
+				get caducada() {
+					return this._caducada;
+				}
+			} // class Tarea
+			
+			
+			// Presentación en HTML de la clase Tarea
+			class TareaVista {
+				constructor() {	
+					// Contenedor de la lista de tareas
+					this.contenedorListaTareas = document.getElementById("listaTareas");
+					
+					// Manejador de evento de crear tarea
+					this.botonTarea = document.getElementById("crearTarea");
+					this.botonTarea.addEventListener("click", crearTarea);
+					
+					// Datos sobre número total de tareas y tareas completadas 
+					this.eleNumTotalTareas = document.getElementById("numTotalTareas");
+					this.eleTareasFinalizadas = document.getElementById("tareasFinalizadas");
+				}
+				
+				agregar(laTarea) {
+					// Creamos los elementos
+					let div = document.createElement("div");
+					div.id = laTarea.id;
+					div.classList.add("tarea");
+					// Comprobamos si está caducada
+					if(laTarea.caducada) {
+						div.classList.add("caducada");
+					}
+					let checkbox = document.createElement("input");
+					checkbox.type = 'checkbox';
+					let spanTexto = document.createElement("span");
+					spanTexto.classList.add("textoTarea");
+					spanTexto.textContent = laTarea.texto;
+					let spanFecha = document.createElement("span");
+					spanFecha.classList.add("textoTarea");
+					spanFecha.textContent = laTarea.fecha;
+					let botonEliminar = document.createElement("button");
+					botonEliminar.textContent = "Eliminar";
+					botonEliminar.classList.add("botonEliminar");		
+					
+					div.append(checkbox, spanTexto, spanFecha, botonEliminar);
+					this.contenedorListaTareas.append(div);
+					
+					// Establecemos los manejadores de eventos
+					checkbox.addEventListener("click", ()=>cambiarEstadoTarea(laTarea, div) );
+					botonEliminar.addEventListener("click", ()=>eliminarTarea(laTarea, div) );
+
+					// Devolvemos el nodo que acabamos de crear
+					return div;
+				} // agregar
+				
+				cambiarEstado(nodoTarea) {
+					if( nodoTarea.classList.contains("finalizada") ) {
+						nodoTarea.classList.remove("finalizada");
+					} else {
+						nodoTarea.classList.add("finalizada");
+					}
+				}
+				
+				mostrarDatosGenerales(totalTareas, totalCompletadas) {
+					this.eleNumTotalTareas.textContent = totalTareas;
+					this.eleTareasFinalizadas.textContent = totalCompletadas;
+				}
+			} //TareaVista
+			
+			// Programa "principal"
+			let listaTareas = [];
+			let idTarea = 0; // Siempre aumenta
+			let numTotalTareas = 0, tareasFinalizadas = 0;
+			
+			let vistaLista = new TareaVista( );
+			vistaLista.mostrarDatosGenerales(numTotalTareas, tareasFinalizadas);
+			
+			function crearTarea(e) {
+				let texto = "", fecha = "";
+				
+				let infoTarea = null;
+				let nodoTarea = null;
+				
+				e.preventDefault();
+				
+				texto = document.getElementById("textoTarea").value;
+				fecha = document.getElementById("fechaTarea").value;
+				
+				if ( Tarea.validar(texto, fecha) ) {
+					infoTarea = new Tarea(idTarea, texto, fecha);
+					nodoTarea = vistaLista.agregar(infoTarea);
+										
+					listaTareas.push({infoTarea, nodoTarea});
+					
+					numTotalTareas++;
+					vistaLista.mostrarDatosGenerales(numTotalTareas, tareasFinalizadas);
+					
+					// Incrementamos el idTarea
+					idTarea++;
+				} else {
+					alert("El texto y la fecha de la tarea no pueden estar vacíos.");
+				}
+				
+			} // creaTarea
+			
+			
+			// Marcar o desmarcar como finalizada
+			function cambiarEstadoTarea(laTarea, nodoTarea) {
+				laTarea.cambiarEstado();
+				vistaLista.cambiarEstado(nodoTarea);
+				
+				// Actualizamos datos generales
+				if(laTarea.finalizada) {
+					tareasFinalizadas++;
+				} else {
+					tareasFinalizadas--;
+				}
+				vistaLista.mostrarDatosGenerales(numTotalTareas, tareasFinalizadas);
+			} // finalizarTarea
+			
+
+			// Eliminar Tarea
+			function eliminarTarea(laTarea, nodoTarea) {
+				// Actualizamos datos generales
+				if(laTarea.finalizada) {
+					tareasFinalizadas--;
+				}
+				numTotalTareas--;
+				vistaLista.mostrarDatosGenerales(numTotalTareas, tareasFinalizadas);
+				
+				listaTareas = listaTareas.filter( eleArray=> eleArray.infoTarea.id !== laTarea.id ); 
+				nodoTarea.remove();
+			} // eliminarTarea
+			
+		</script>
+	</body>
+</html>

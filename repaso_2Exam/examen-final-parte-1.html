@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Test</title>
+</head>
+<body>
+    <h1>Crear Test</h1>
+
+    <form id="datosTest"></form>
+
+    <script>
+        // Creamos el formulario con los datos generales del Test: Número de preguntas y número de respuestas
+        const datosTest = document.getElementById("datosTest");
+        // Número de preguntas
+        let labelPreguntas = document.createElement("label");
+        labelPreguntas.textContent = "Número de preguntas:";
+        let inputPreguntas = document.createElement("input");
+        inputPreguntas.type = "text";
+        datosTest.appendChild(labelPreguntas);
+        datosTest.appendChild(inputPreguntas);
+        // Número de respuestas
+        let labelRespuestas = document.createElement("label");
+        labelRespuestas.textContent = " - Número de respuestas:";
+        let inputRespuestas = document.createElement("input");
+        inputRespuestas.type = "text";
+        datosTest.appendChild(labelRespuestas);
+        datosTest.appendChild(inputRespuestas);
+
+        // Variables globales para el número de preguntas y respuestas
+        let numPreguntas = 0;
+        let numRespuestas = 0;
+
+        // Variable golbal con el formulario de preguntas
+        let formPreguntas;
+
+        // Generamos las preguntas y sus respuestas cuando el número de preguntas y el de respuestas son números positivos
+        inputPreguntas.addEventListener("change", validarDatosTest);
+        inputRespuestas.addEventListener("change", validarDatosTest);
+
+        function validarDatosTest() {
+            numPreguntas = inputPreguntas.value;
+            numRespuestas = inputRespuestas.value;
+
+            if(numPreguntas>0 && numRespuestas>0) {
+                generarPreguntas();
+            } 
+        }
+
+        function generarPreguntas() {
+            let formPreguntas = document.createElement("form");
+            formPreguntas.name ="formPreguntas";
+            // Lo insertamos después del formulario preguntas, 
+            // si lo insertamos con document.body.appendchild() queda después del script
+            datosTest.insertAdjacentElement("afterend",formPreguntas);
+
+            let capaPregunta;
+            let labelPregunta;
+            let inputPregunta;
+            let labelRespuesta;
+            let inputRespuesta;
+
+            // Bucle para las preguntas
+            for(i=1; i<=numPreguntas; i++) {
+                // Cada pregunta en una línea
+                capaPregunta = document.createElement("div");
+                labelPregunta = document.createElement("label");
+                inputPregunta = document.createElement("input");
+                labelPregunta.textContent = "Pregunta "+ i;
+                inputPregunta.type = "text";
+                inputPregunta.name = "p"+i;
+                // Añadimos la pregunta a la capa
+                capaPregunta.appendChild(labelPregunta);
+                capaPregunta.appendChild(inputPregunta);
+
+                // Bucle para las respuestas
+                for(j=1; j<=numRespuestas; j++) {
+                    labelRespuesta = document.createElement("label");
+                    inputRespuesta = document.createElement("input");
+                    labelRespuesta.textContent = "Respuesta "+ j;
+                    inputRespuesta.type = "text";
+                    inputRespuesta.name = "r"+j;
+                    // Añadimos la respuesta a la capa
+                    capaPregunta.appendChild(labelRespuesta);
+                    capaPregunta.appendChild(inputRespuesta);
+                }
+
+                // Añadimos la capa al formulario
+                formPreguntas.appendChild(capaPregunta);
+
+            } // for preguntas
+
+            // Botón para generar el test
+
+        }
+    </script>
+    
+</body>
+</html>

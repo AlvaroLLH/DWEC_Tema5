@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<title>Ejercicio 2 - Tablero ajedrez</title>
+	</head>
+	<body>
+		<h1>Ejercicio 2</h1>
+		<p><strong>Para ver el resultado ver la consola del navegador</strong></p>
+		<p>Enunciado:<br>
+		Como fase inicial de una simulación para un juego de ajedrez se desea crear los siguientes elementos:</p>
+		<ul>
+			<li>Un array “tablero” de dos dimensiones: 8x8</li>
+			<li>Un objeto “figura” con las propiedades “x” e “y” (coordenadas de la posición en tablero) y el método “moverA(x,y)” que permite cambiar “x” e “y”.</li>
+			<li>Una array con las 16 figuras disponibles. Cada figura es un objeto delegado de “figura” con la propiedad “tipo” que debe ser uno de los siguientes strings:<br>
+			“K”->Rey, ”Q”->Reina, ”T”->Torre, ”A”->Alfil, ”C”->Caballo y ”P”->Peón.
+			<li>Una función “colocarPieza(figura, tablero)” que permite colocar cada figura en un lugar aleatorio del tablero.</li>
+		</ul>
+		<p>Finalmente se debará:</p>
+		<ul>
+			<li>Colocar todas las figuras en el tablero.</li>
+			<li>Motrar el tablero con “console.table(tablero)”</li>
+		</ul>
+		<h3>Resultado esperado</h3>
+		<img src="javascript_ej2_Objetos.webp" width="364" height="180" alt="resultado ejercicio">
+		
+		<script language="javascript">
+			let tablero = [
+							[" "," "," "," "," "," "," "," "],
+							[" "," "," "," "," "," "," "," "],
+							[" "," "," "," "," "," "," "," "],
+							[" "," "," "," "," "," "," "," "],
+							[" "," "," "," "," "," "," "," "],
+							[" "," "," "," "," "," "," "," "],
+							[" "," "," "," "," "," "," "," "],
+							[" "," "," "," "," "," "," "," "]
+						  ];
+
+			// Array con la cantidad y tipo de las piezas que tendré que crear como OBJETOS
+			// Me permite crear los objetos pieza con un bucle
+			const listaPiezas = ["P","P","P","P","P","P","P","P","T","T","C","C","A","A","Q","K"];
+			
+			// Array para almacenar los objetos pieza
+			let piezas = [];
+						  
+			// Objeto figura mediante funcion constructora
+			function Figura() {
+				// Propiedades. Inicialmente no está colocada => Posición en el tablero = -1
+				this.x = -1;
+				this.y = -1;
+			}
+			// Método para colocar el objeto figura en el tablero
+			// Lo definimos en el prototipo para que NO este repetido por cada objeto existente
+			Figura.prototype.moverA = function(px,py) {
+				this.x = px;
+				this.y = py;
+			};
+			
+			// Comprobamos la creación de la figura y el método
+			const pruebaFigura = new Figura();
+			pruebaFigura.moverA(4,3);
+			console.log("Objeto figura (pruebaFigura):");
+			console.log(pruebaFigura);
+			
+			// EL Objeto PIEZA es delegado de figura (hereda de figura a través del prototipo)
+			function Pieza(unTipo) {
+				this.tipo = unTipo;
+			}
+			// Establecemos la herecia prototípica (funciona con OBJETOS)
+			// Lo siguiente NO FUNCIONA
+			//	Pieza.prototype = Figura; 
+			//		Esto crea una propiedad nueva llamada prototype que NO ES el prototipo
+			//		No funciona porue Figura NO ES un objeto (es una función)
+			//	Object.setPrototypeOf(Pieza, Figura);
+			//		Esto no crea en el prototipo de pieza una figura
+			//		Crea en el prototipo de la funcion "constructor" la funcion Figura
+			//  Pieza.prototype = Figura.prototype;
+			//		Esto funciona PERO coloca en el prototipo de figura los métodos del prototipo
+			//		de pieza, lo cual NO es "herencia"
+			
+			// Estas dos opciones SÍ funcionan
+			//Pieza.prototype = new Figura();  // Pieza.prototype tiene también las propiedades del objeto figura recien creado
+			Pieza.prototype = Object.create(Figura.prototype); // Pieza.prototype NO tiene las propiedades, porque creamos un objeto tomando el prototipo de figura como plantilla
+			// Más info: https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Object/create
+			
+			// Comprobamos la creación de pieza y la herencia prototípica
+			const pruebaPieza = new Pieza("P");
+			pruebaPieza.moverA(2,5);
+			console.log("Objeto pieza (pruebaPieza):");
+			console.log(pruebaPieza);
+			
+			
+
+			// Función para colocar las piezas en el Tablero
+			function colocarPieza(unaPieza, elTablero) {
+				// Posición aleatoria para la pieza
+				const px = Math.floor(Math.random() * tablero.length);
+				const py = Math.floor(Math.random() * tablero.length);
+				
+				// Movemos la pieza a su posición
+				unaPieza.moverA(px,py);
+				
+				// Colocar la pieza en el tablero
+				// OJO: No comprobamos que ya exista una pieza en esa posición
+				elTablero[unaPieza.x][unaPieza.y] = unaPieza.tipo; 
+			}
+
+			
+			// Creamos los objetos PIEZA
+			for (tipo of listaPiezas) {
+				piezas.push( new Pieza(tipo) );
+			}
+			
+			// Comprobamos el array de piezas
+			console.log(piezas);
+			
+			// Colocamos la piezas en el tablero y lo mostramos
+			for (laPieza of piezas) {
+				colocarPieza(laPieza, tablero);
+			}
+			console.table(tablero);
+			
+			
+			
+			
+			console.log("utilizando class de ES6 ----------------");
+			class ClaseFigura {
+				x = -1;
+				y = -1;
+				
+				moverALA(px, py) {
+					this.x = px;
+					this.y = py;
+				}
+			} // claseFigura
+			
+			class ClasePieza extends ClaseFigura {
+				tipo = "";
+			} // clasePieza
+			
+			const unaPieza = new ClasePieza();
+			unaPieza.moverALA(3,3);
+			console.log(unaPieza);
+		</script>
+	</body>
+</html>

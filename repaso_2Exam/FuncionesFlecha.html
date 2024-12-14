@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Prueba Funciones Flecha</title>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<h1>Prueba funciones flecha</h1>
+		<p>Mira la consola del navegador</p>
+		
+		<p>Las funciones flecha MANTIENEN el contexto, es decir podemos utilizar 
+			this en una función flecha para referirnos al objeto dentro del cual se ejecuta
+			la función flecha.<br/>
+			En nuestro caso this.max sigue haciendo referencia al objeto Numero</p>
+			
+		<p>Para más información: <a href="https://leanpub.com/understandinges6/read/#leanpub-auto-arrow-functions">Understanding ECMAScript 6</a></p>
+		
+		<script>
+		class Numero {
+		
+			max = 0;
+			
+			constructor(valor) {
+				this.max = valor;
+			}
+
+			// Este método NO funciona
+			find(numbers) {
+				numbers.forEach(function (element) {
+					/* Al usar function creamos un nuevo "objeto" (contexto)
+					 * y por ello this.max NO existe, porque ya no estamos estamos
+					 * en el objeto Numero, sino en el nuevo creado por function
+					 */
+					if (element > this.max) {
+						this.max = element;
+					}
+				});
+			}
+			
+			maximo(numeros) {
+				/* Las funciones flecha MANTIENEN el contexto, es decir this
+				 * sigue haciendo referencia al objeto Numero
+				 */
+				numeros.forEach(element => {
+					if (element > this.max) {
+						this.max = element;
+					}
+				});
+			}
+		};
+		
+		const elNumero = new Numero(5);
+		
+		/* SIN Función flecha *
+		console.log("Max antes de find(): " + elNumero.max);
+		
+		elNumero.find([27,72,33,12]);
+
+		console.log("\nMax después de find(): " + elNumero.max);
+		*/
+		
+		/* CON función flecha */
+		console.log("Max antes de maximo(): " + elNumero.max);
+		
+		elNumero.maximo([27,72,33,12]);
+
+		console.log(`Max después de maximo(): ${elNumero.max}`);
+		
+		
+		</script>
+	</body>
+</html>

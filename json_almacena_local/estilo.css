@@ -1,0 +1,75 @@
+/* Estilos generales para la página */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ocupa toda la pantalla */
+    margin: 0;
+    background-color: #f4f4f9; /* Color de fondo suave*/
+}
+
+/* Contenedor principal del chat */
+.contenedor-chat {
+    width: 100%;
+    max-width: 600px; /* Limita el ancho máximo */
+    background-color: white;
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
+    overflow: hidden; /* Ocultar el contenido que desborde */
+}
+
+/* Zona de los mensajes */
+.mensajes {
+    padding: 15px;
+    max-height: 400px; /* Limita la altura máxima de los mensajes */
+    overflow-y: auto; /* Permite desplazarse si los mensajes superan la altura */
+    background-color: #fafafa; /* Color de fondo para los mensajes */
+}
+
+/* Estilo de cada mensaje */
+.mensaje {
+    margin-bottom: 10px; /* Espacio entre mensajes */
+    padding: 8px;
+    background-color: #e1f5fe; /* Fondo azul claro para el mensaje */
+    border-radius: 4px; /* Bordes redondeados */
+    max-width: 80%; /* Limita el ancho máximo */
+}
+
+/* Estilo para el timestamp de los mensajes */
+.mensaje .timestamp {
+    font-size: 0.8em;
+    color: #666; /* Color gris claro */
+    margin-top: 5px; /* Espacio entre el texto y el timestamp */
+}
+
+/* Contenedor para el formulario de entrada */
+.input-mensaje {
+    display: flex;
+    border-top: 1px solid #ccc; /* Línea superior divisoria */
+    padding: 10px;
+}
+
+/* Estilo para el campo de texto */
+#input-mensaje {
+    flex: 1; /* El input ocupa todo el espacio disponible */
+    padding: 10px;
+    border: 1px solid #ccc; /* Borde gris claro */
+    border-radius: 4px; /* Bordes redondeados */
+}
+
+/* Estilo para el botón de enviar */
+#boton-enviar {
+    pad: 10px 20px;
+    margin-left: 10px; /* Espacio entre el input y el botón */
+    background-color: #007bff; /* Fondo azul para el botón */
+    color: white; /* Color del texto del botón */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+}
+
+/* Estilo para cuando el cursor pasa sobre el botón */
+#boton-enviar:hover {
+    background-color: #0056b3; /* Azul más oscuro cuando se pasa el cursor */
+}
